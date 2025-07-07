@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Sinais Bac Bo — IA + Diego</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: #0b0c10;
+      color: #fff;
+      padding: 20px;
+      overflow-x: hidden;
+    }
+
+    h1 {
+      text-align: center;
+      color: #0ff;
+      text-shadow: 0 0 10px #0ff;
+    }
+
+    .coluna {
+      border: 1px solid #0ff;
+      border-radius: 8px;
+      padding: 10px;
+      margin: 10px;
+      display: inline-block;
+      background: #1a1a1a;
+    }
+
+    .linha {
+      margin: 5px 0;
+    }
+
+    select {
+      width: 100%;
+      padding: 5px;
+      background: #0b0c10;
+      color: #0ff;
+      border: 1px solid #0ff;
+      border-radius: 5px;
+    }
+
+    #gerar {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      padding: 15px 25px;
+      background: #0ff;
+      color: #000;
+      border: none;
+      border-radius: 30px;
+      font-size: 1rem;
+      box-shadow: 0 0 20px #0ff;
+      cursor: pointer;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 10px #0ff; }
+      50% { box-shadow: 0 0 25px #0ff; }
+    }
+
+    .resultado {
+      margin-top: 30px;
+      padding: 15px;
+      border: 1px solid #0ff;
+      background: #141414;
+      border-radius: 8px;
+    }
+
+    .floating-dollar {
+      position: fixed;
+      top: -50px;
+      animation: floatDollar 10s linear infinite;
+      font-size: 2rem;
+      color: #0f0;
+      opacity: 0.2;
+    }
+
+    @keyframes floatDollar {
+      0% { top: 100%; left: 5%; transform: rotate(0deg); }
+      100% { top: -50px; left: 95%; transform: rotate(720deg); }
+    }
+  </style>
+</head>
+<body>
+  <h1>🔮 Sinais Bac Bo — Feito pela IA e Diego com 2 Estratégias 🔥</h1>
+
+  <div style="text-align: center;">
+    <div id="colunas"></div>
+  </div>
+
+  <div class="resultado" id="resultado">Nenhum sinal detectado ainda.</div>
+
+  <button id="gerar">📊 Analisar Padrões</button>
+
+  <div class="floating-dollar">💵</div>
+
+  <script>
+    const opcoes = ["", "Player", "Banker", "Tie"];
+    const colunas = 3;
+    const linhas = 6;
+
+    const container = document.getElementById("colunas");
+    for (let c = 0; c < colunas; c++) {
+      const col = document.createElement("div");
+      col.className = "coluna";
+      col.innerHTML = `<strong>Coluna ${c + 1}</strong>`;
+      for (let l = 0; l < linhas; l++) {
+        const linha = document.createElement("div");
+        linha.className = "linha";
+        const select = document.createElement("select");
+        select.id = `c${c}l${l}`;
+        opcoes.forEach(op => {
+          const opt = document.createElement("option");
+          opt.value = op;
+          opt.text = op || `Linha ${l + 1}`;
+          select.appendChild(opt);
+        });
+        linha.appendChild(select);
+        col.appendChild(linha);
+      }
+      container.appendChild(col);
+    }
+
+    document.getElementById("gerar").addEventListener("click", () => {
+      const dados = [];
+      for (let c = 0; c < colunas; c++) {
+        const coluna = [];
+        for (let l = 0; l < linhas; l++) {
+          const val = document.getElementById(`c${c}l${l}`).value;
+          coluna.push(val);
+        }
+        dados.push(coluna);
+      }
+
+      const r = document.getElementById("resultado");
+      let hora = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+      // Estratégia 1
+      if (
+        dados[0][4] && dados[0][5] &&
+        dados[1][0] &&
+        ((dados[0][4] === "Banker" && dados[0][5] === "Player" && dados[1][0] === "Player") ||
+         (dados[0][4] === "Player" && dados[0][5] === "Banker" && dados[1][0] === "Banker"))
+      ) {
+        r.innerHTML = `⏰ ${hora} - Estratégia 1 detectada<br>
+        👉 Entrada: ${dados[1][0] === "Player" ? "Linha 2 = Player" : "Linha 2 = Banker"}<br>
+        🛡️ Proteção: Tie`;
+        return;
+      }
+
+      // Estratégia 2 - V
+      if (
+        dados[0][0] && dados[0][1] &&
+        dados[1][5] &&
+        ((dados[0][0] === "Player" && dados[0][1] === "Banker" && dados[1][5] === "Player") ||
+         (dados[0][0] === "Banker" && dados[0][1] === "Player" && dados[1][5] === "Banker"))
+      ) {
+        r.innerHTML = `⏰ ${hora} - Estratégia 2 (V) detectada<br>
+        👉 Entrada próxima coluna: ${dados[1][5] === "Player" ? "Linha 1 = Banker" : "Linha 1 = Player"}<br>
+        🛡️ Proteção: Tie`;
+        return;
+      }
+
+      r.innerHTML = `⏰ ${hora} - Nenhum padrão detectado.`;
+    });
+  </script>
+</body>
+</html>
